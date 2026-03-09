@@ -86,17 +86,14 @@ function AgentPage() {
   }
 
   const startTimeout = () => {
-    // Clear existing timeout
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current)
     }
-    // Set new timeout for 1 minute (60000ms)
     timeoutRef.current = window.setTimeout(() => {
       addMessage(
         'agent',
         'This session will end without saving your data. Please come back later to start the upload process again. Thank you.',
       )
-      // Clear timeout after showing message
       window.setTimeout(() => {
         handleLogout()
       }, 3000)
@@ -123,7 +120,7 @@ function AgentPage() {
   }, [messages, isTyping])
 
   useEffect(() => {
-    // Auto-focus input when component mounts
+    
     inputRef.current?.focus()
   }, [])
 
@@ -135,11 +132,11 @@ function AgentPage() {
     }
     setUser(u)
 
-    // Check if user details already collected
+    
     const savedDetails = getUserDetails()
     if (savedDetails) {
       setUserDetails(savedDetails)
-      setStep(2) // Skip to upload confirmation step
+      setStep(2) 
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       setMessages([
         {
@@ -162,7 +159,7 @@ function AgentPage() {
         },
       ])
     } else {
-      // Start fresh conversation
+  
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       setMessages([
         {
@@ -172,26 +169,24 @@ function AgentPage() {
           time,
         },
       ])
-      // Start timeout timer
+
       startTimeout()
     }
   }, [navigate])
 
   const extractNameAndEmail = (text) => {
-    // Try to extract email (pattern: something@domain.com)
     const emailRegex = /[\w.-]+@[\w.-]+\.\w+/gi
     const emailMatch = text.match(emailRegex)
     const email = emailMatch ? emailMatch[0] : null
 
-    // Extract name - everything before email, or if no email, try to parse
+
     let name = text
     if (email) {
       name = text.substring(0, text.indexOf(email)).trim()
-      // Remove common separators
+
       name = name.replace(/[,;:]$/, '').trim()
     }
 
-    // If name contains comma, split it
     if (name.includes(',')) {
       name = name.split(',')[0].trim()
     }
@@ -203,12 +198,10 @@ function AgentPage() {
     const trimmed = userText.trim()
     if (!trimmed) return
 
-    // Reset timeout on user input
     clearUserTimeout()
     startTimeout()
 
     if (step === 1) {
-      // Waiting for Full Name and Email ID
       const { name, email } = extractNameAndEmail(trimmed)
 
       if (!name || !email) {
@@ -220,7 +213,6 @@ function AgentPage() {
         return
       }
 
-      // Save user details
       saveUserDetails(name, email)
       setUserDetails({ fullName: name, email })
       setStep(2)
@@ -230,7 +222,6 @@ function AgentPage() {
     }
 
     if (step === 2) {
-      // Waiting for upload confirmation
       const norm = trimmed.toLowerCase()
       if (norm.includes('yes') || norm === 'y') {
         addMessage('agent', 'Do you have any previous experience or are you a Fresher?', 800)
@@ -248,7 +239,6 @@ function AgentPage() {
     }
 
     if (step === 3) {
-      // Waiting for experience/fresher response
       const norm = trimmed.toLowerCase()
       if (norm.includes('fresher')) {
         addMessage(
@@ -269,7 +259,6 @@ function AgentPage() {
           800,
         )
       }
-      // Conversation can continue, but we've completed the main flow
     }
   }
 
